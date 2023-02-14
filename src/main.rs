@@ -1,5 +1,6 @@
 extern crate csv;
 
+use csv::StringRecord;
 use std::env;
 use std::error::Error;
 use std::ffi::OsString;
@@ -18,11 +19,16 @@ fn fopen(path: &OsString) -> Result<File, Box<dyn Error>> {
     Ok(file)
 }
 
-fn csv_parse(file: File, name_vec: &mut Vec<String>) -> Result<(), Box<dyn Error>> {
+fn csv_parse(
+    file: File,
+    name_vec: &mut Vec<String>,
+    ammo_vec: &mut Vec<StringRecord>,
+) -> Result<(), Box<dyn Error>> {
     let mut rdr = csv::Reader::from_reader(file);
     for result in rdr.records() {
         let record = result?;
         println!("{:?}", record);
+        ammo_vec.push(record.clone());
         if let Some(name) = record.get(0) {
             name_vec.push(name.to_string());
         }
@@ -40,14 +46,17 @@ fn main() {
     };
 
     let mut name_vec: Vec<String> = Vec::new();
+    let mut ammo_vec: Vec<StringRecord> = Vec::new();
 
-    match csv_parse(fopen(&file_path).unwrap(), &mut name_vec) {
+    match csv_parse(fopen(&file_path).unwrap(), &mut name_vec, &mut ammo_vec) {
         Ok(_) => println!("Successfully parsed CSV"),
         Err(err) => {
             eprintln!("Error: {}", err);
             process::exit(1);
         }
     }
-
     println!("{:?}", name_vec);
+    println!("{:?}", ammo_vec);
+    println!("length of name_vec is {}", name_vec.len());
+    println!("length of ammo_vec is {}", ammo_vec.len());
 }
