@@ -73,4 +73,9 @@ fn main() {
     println!("length of name_vec is {}", name_vec.len());
     println!("length of ammo_vec is {}", ammo_vec.len());
     println!("length of similarity_vec is {}", similarity_vec.len());
+
+    println!(
+        "minimum score of similarity_vec is {}",
+        similarity_vec.iter().min().unwrap()
+    );
 }
