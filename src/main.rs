@@ -28,7 +28,6 @@ fn csv_parse(
     similarity_vec: &mut Vec<usize>,
 ) -> Result<(), Box<dyn Error>> {
     let mut rdr = csv::Reader::from_reader(file);
-    // let ammo = String::from("7.62x39 BP");
     let ammo = "7.62x39 BP";
     for result in rdr.records() {
         let record = result?;
@@ -74,8 +73,15 @@ fn main() {
     println!("length of ammo_vec is {}", ammo_vec.len());
     println!("length of similarity_vec is {}", similarity_vec.len());
 
-    println!(
-        "minimum score of similarity_vec is {}",
-        similarity_vec.iter().min().unwrap()
-    );
+    let minimum_similarity = similarity_vec.iter().min().unwrap();
+    println!("minimum score of similarity_vec is {}", minimum_similarity);
+
+    let minimum_idx = similarity_vec
+        .iter()
+        .position(|r| r == minimum_similarity)
+        .unwrap();
+
+    println!("minimum score of similraity index is {}", minimum_idx);
+
+    println!("the ammo is {:?}", ammo_vec.get(minimum_idx));
 }
