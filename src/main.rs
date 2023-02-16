@@ -24,19 +24,18 @@ fn fopen(path: &OsString) -> Result<File, Box<dyn Error>> {
 
 fn csv_parse(
     file: File,
+    query_ammo: String,
     name_vec: &mut Vec<String>,
     ammo_vec: &mut Vec<StringRecord>,
     similarity_vec: &mut Vec<usize>,
 ) -> Result<(), Box<dyn Error>> {
     let mut rdr = csv::Reader::from_reader(file);
-    let ammo = "7.62x39 BP";
     for result in rdr.records() {
         let record = result?;
-        // println!("{:?}", record);
         ammo_vec.push(record.clone());
         if let Some(name) = record.get(0) {
             name_vec.push(name.to_string());
-            similarity_vec.push(levenshtein(ammo, name));
+            similarity_vec.push(levenshtein(&query_ammo, name));
         }
     }
     Ok(())
@@ -57,11 +56,11 @@ fn main() {
     let mut similarity_vec: Vec<usize> = Vec::new();
 
     // input stdin
-    let mut s: String = String::new();
-    let result: io::Result<usize> = io::stdin().read_line(&mut s);
+    let mut query_ammo: String = String::new();
+    let result: io::Result<usize> = io::stdin().read_line(&mut query_ammo);
     match result {
         Ok(_) => {
-            println!("{}", s);
+            println!("{}", query_ammo);
         }
         Err(err) => {
             println!("{}", err);
@@ -70,6 +69,7 @@ fn main() {
 
     match csv_parse(
         fopen(&file_path).unwrap(),
+        query_ammo,
         &mut name_vec,
         &mut ammo_vec,
         &mut similarity_vec,
@@ -106,8 +106,6 @@ fn main() {
         .iter()
         .position(|r| r == minimum_similarity)
         .unwrap();
-
-    println!("the ammo is {:?}", ammo_vec.get(minimum_idx));
 
     for (info, column_name) in ammo_vec
         .get(minimum_idx)
