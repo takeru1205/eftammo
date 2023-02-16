@@ -66,22 +66,47 @@ fn main() {
             process::exit(1);
         }
     }
-    println!("{:?}", name_vec);
-    println!("{:?}", ammo_vec);
-    println!("{:?}", similarity_vec);
-    println!("length of name_vec is {}", name_vec.len());
-    println!("length of ammo_vec is {}", ammo_vec.len());
-    println!("length of similarity_vec is {}", similarity_vec.len());
+    // println!("{:?}", name_vec);
+    // println!("{:?}", ammo_vec);
+    // println!("{:?}", similarity_vec);
+    // println!("length of name_vec is {}", name_vec.len());
+    // println!("length of ammo_vec is {}", ammo_vec.len());
+    // println!("length of similarity_vec is {}", similarity_vec.len());
 
     let minimum_similarity = similarity_vec.iter().min().unwrap();
-    println!("minimum score of similarity_vec is {}", minimum_similarity);
+
+    let column_list = [
+        "Name",
+        "ShortName",
+        "InternalName",
+        "Type",
+        "Damage",
+        "PenetrationPower",
+        "MaxArmorPenClass",
+        "ArmorDamage",
+        "Speed",
+        "IsTracer",
+        "MisfireChance",
+        "PenetrationPowerDeviation",
+        "PenetrationChance",
+        "RicochetChance",
+        "SpeedRetardation",
+        "Description",
+    ];
 
     let minimum_idx = similarity_vec
         .iter()
         .position(|r| r == minimum_similarity)
         .unwrap();
 
-    println!("minimum score of similraity index is {}", minimum_idx);
-
     println!("the ammo is {:?}", ammo_vec.get(minimum_idx));
+
+    for (info, column_name) in ammo_vec
+        .get(minimum_idx)
+        .unwrap()
+        .iter()
+        .zip(column_list.iter())
+    {
+        println!("{}: {:?}", column_name, info);
+    }
 }
