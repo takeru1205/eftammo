@@ -7,6 +7,7 @@ use std::env;
 use std::error::Error;
 use std::ffi::OsString;
 use std::fs::File;
+use std::io;
 use std::process;
 
 fn get_first_arg() -> Result<OsString, Box<dyn Error>> {
@@ -31,7 +32,7 @@ fn csv_parse(
     let ammo = "7.62x39 BP";
     for result in rdr.records() {
         let record = result?;
-        println!("{:?}", record);
+        // println!("{:?}", record);
         ammo_vec.push(record.clone());
         if let Some(name) = record.get(0) {
             name_vec.push(name.to_string());
@@ -42,6 +43,7 @@ fn csv_parse(
 }
 
 fn main() {
+    // read ammo data csv
     let file_path = match get_first_arg() {
         Ok(file_path) => file_path,
         Err(err) => {
@@ -53,6 +55,18 @@ fn main() {
     let mut name_vec: Vec<String> = Vec::new();
     let mut ammo_vec: Vec<StringRecord> = Vec::new();
     let mut similarity_vec: Vec<usize> = Vec::new();
+
+    // input stdin
+    let mut s: String = String::new();
+    let result: io::Result<usize> = io::stdin().read_line(&mut s);
+    match result {
+        Ok(_) => {
+            println!("{}", s);
+        }
+        Err(err) => {
+            println!("{}", err);
+        }
+    }
 
     match csv_parse(
         fopen(&file_path).unwrap(),
@@ -66,12 +80,6 @@ fn main() {
             process::exit(1);
         }
     }
-    // println!("{:?}", name_vec);
-    // println!("{:?}", ammo_vec);
-    // println!("{:?}", similarity_vec);
-    // println!("length of name_vec is {}", name_vec.len());
-    // println!("length of ammo_vec is {}", ammo_vec.len());
-    // println!("length of similarity_vec is {}", similarity_vec.len());
 
     let minimum_similarity = similarity_vec.iter().min().unwrap();
 
